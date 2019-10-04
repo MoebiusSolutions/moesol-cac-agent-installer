@@ -18,8 +18,8 @@ Launching cac-ssl-relay
 
 The installer script will make the following commands available (among many others):
 
-* On Linux: `~/bin/cac-ssl-relay.moesol-opensc`
-* On Windows: `%HomePath%\bin\cac-ssl-relay.moesol-windows.bat`
+* On Linux: `~/bin/cac-ssl-relay.profile-opensc`
+* On Windows: `%HomePath%\bin\cac-ssl-relay.profile-windows.bat`
 
 Simply launch the appropriate command in a terminal and leave it running.
 If you ever encounter errors--due to card re-inserts or other failures--simply
