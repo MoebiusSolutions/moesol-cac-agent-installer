@@ -1,4 +1,4 @@
-DCGSN Procedures for cac-agent
+Moebius Solutions cac-agent Installer
 ================
 
 Overview
@@ -6,8 +6,7 @@ Overview
 
 In order to access CAC-portected HTTPS sites with software with software
 that may not be CAC-enabled (Git, Maven, Eclipse, etc), we're leveraging
-the [cac-agent](https://github.com/MoebiusSolutions/cac-agent) created by
-Moebius Solutions.
+the [cac-agent](https://github.com/MoebiusSolutions/cac-agent).
 
 Among other features, this provides an "cac-ssl-relay" process that can
 be used to tunnel HTTP traffic through a background process that handles
