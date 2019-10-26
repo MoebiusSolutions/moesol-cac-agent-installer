@@ -40,19 +40,19 @@ def remove_section(in_file, out_file, start_pattern, end_pattern):
 
 def write_wrapper_script(script_file, args):
     if platform.system() == "Linux":
-        with open(script_file, "w") as out_file:
-            out_file.write(f"#!/bin/bash\n")
-            out_file.write(f"\n")
+        with open(str(script_file), "w") as out_file:
+            out_file.write("#!/bin/bash\n")
+            out_file.write("\n")
             for arg in args:
-                out_file.write(f"\"{arg}\" ")
+                out_file.write("\"%s\" " % arg)
             # Pass through any script args
             out_file.write("$*\n")
             out_file.write("\n")
     elif platform.system() == "Windows":
-        with open(script_file, "w") as out_file:
+        with open(str(script_file), "w") as out_file:
             out_file.write("\n")
             for arg in args:
-                out_file.write(f"\"{arg}\" ")
+                out_file.write("\"%s\" " % arg)
             # Pass through any script args
             out_file.write("%*\n")
             out_file.write("\n")
@@ -67,7 +67,7 @@ def download_file_if_missing(url, target_file):
     target_file_temp = target_file.parent / (target_file.name + ".tmp")
     print("Downloading ["+str(target_file)+"]")
     print("... from ["+url+"]")
-    urllib.request.urlretrieve(url, target_file_temp)
+    urllib.request.urlretrieve(url, str(target_file_temp))
     target_file_temp.rename(target_file)
 
 
@@ -154,7 +154,7 @@ home_dir = Path.home()
 # NOTE: This is not a secured location (other users can access).
 temp_dir_insecure = Path(tempfile.gettempdir()) / \
     Path(os.path.abspath(__file__)).name
-os.makedirs(temp_dir_insecure, mode=0o755, exist_ok=True)
+os.makedirs(str(temp_dir_insecure), mode=0o755, exist_ok=True)
 # The path of the cac-agent dir within the users's home (where we're installing to)
 cacagent_dir = home_dir / ".moesol/cac-agent/"
 # The bin directory that includes commands in the user's PATH
@@ -185,19 +185,19 @@ for profile in DEPRECATED_PROFILE_DIRS:
 for profile in CAC_AGENT_PROFILES[platform.system()]:
     target_file = cacagent_dir / (profile["name"])
     print("Creating ["+str(target_file)+"]")
-    os.makedirs(target_file, mode=0o700, exist_ok=True)
+    os.makedirs(str(target_file), mode=0o700, exist_ok=True)
 
 # Download cac-agent
 download_file_if_missing(
-    f"https://github.com/MoebiusSolutions/cac-agent.mvn/blob/master/com/github/MoebiusSolutions/cac-jgit/{CAC_AGENT_VERSION}/cac-jgit-{CAC_AGENT_VERSION}-jar-with-dependencies.jar?raw=true",
-    cacagent_dir / f"cac-jgit-{CAC_AGENT_VERSION}-jar-with-dependencies.jar")
+    "https://github.com/MoebiusSolutions/cac-agent.mvn/blob/master/com/github/MoebiusSolutions/cac-jgit/%s/cac-jgit-%s-jar-with-dependencies.jar?raw=true" % (CAC_AGENT_VERSION, CAC_AGENT_VERSION),
+    cacagent_dir / ("cac-jgit-%s-jar-with-dependencies.jar" % CAC_AGENT_VERSION) )
 download_file_if_missing(
-    f"https://github.com/MoebiusSolutions/cac-agent.mvn/blob/master/com/github/MoebiusSolutions/cac-ssl-relay/{CAC_AGENT_VERSION}/cac-ssl-relay-{CAC_AGENT_VERSION}-jar-with-dependencies.jar?raw=true",
-    cacagent_dir / f"cac-ssl-relay-{CAC_AGENT_VERSION}-jar-with-dependencies.jar")
+    "https://github.com/MoebiusSolutions/cac-agent.mvn/blob/master/com/github/MoebiusSolutions/cac-ssl-relay/%s/cac-ssl-relay-%s-jar-with-dependencies.jar?raw=true" % (CAC_AGENT_VERSION, CAC_AGENT_VERSION),
+    cacagent_dir / ("cac-ssl-relay-%s-jar-with-dependencies.jar" % CAC_AGENT_VERSION) )
 
 # Ensure bin directory exists
 print("Ensuring ["+str(bin_dir)+"] exists")
-os.makedirs(bin_dir, mode=0o700, exist_ok=True)
+os.makedirs(str(bin_dir), mode=0o700, exist_ok=True)
 
 # Delete deprecated cac-agent scripts
 for profile in DEPRECATED_PROFILE_DIRS:
@@ -229,15 +229,15 @@ for profile in CAC_AGENT_PROFILES[platform.system()]:
     target_file = bin_dir / ("cac-jgit."+profile["name"]+target_file_extension)
     print("Creating ["+str(target_file)+"] script")
     write_wrapper_script(target_file,
-                         ["java", "-jar", "-Dcom.moesol.agent.profile="+profile["name"], str(cacagent_dir/f"cac-jgit-{CAC_AGENT_VERSION}-jar-with-dependencies.jar")])
-    os.chmod(target_file, mode=0o755)
+                         ["java", "-jar", "-Dcom.moesol.agent.profile="+profile["name"], str(cacagent_dir/("cac-jgit-%s-jar-with-dependencies.jar" % CAC_AGENT_VERSION))])
+    os.chmod(str(target_file), mode=0o755)
     # cac-ssl-relay
     target_file = bin_dir / \
         ("cac-ssl-relay."+profile["name"]+target_file_extension)
     print("Creating ["+str(target_file)+"] script")
     write_wrapper_script(target_file,
-                         ["java", "-jar", "-Dcom.moesol.agent.profile="+profile["name"], str(cacagent_dir/f"cac-ssl-relay-{CAC_AGENT_VERSION}-jar-with-dependencies.jar")])
-    os.chmod(target_file, mode=0o755)
+                         ["java", "-jar", "-Dcom.moesol.agent.profile="+profile["name"], str(cacagent_dir/("cac-ssl-relay-%s-jar-with-dependencies.jar" % CAC_AGENT_VERSION))])
+    os.chmod(str(target_file), mode=0o755)
 
 # Install truststore.jks, pkcs11.cfg, and agent.properties
 listen_port = 9090
@@ -247,49 +247,49 @@ for profile in CAC_AGENT_PROFILES[platform.system()]:
     file_name = "truststore.jks"
     target_file = cacagent_dir / profile["name"] / file_name
     print("Installing ["+str(target_file)+"]")
-    copyfile(script_dir / "cac-agent" / file_name, target_file)
+    copyfile(str(script_dir / "cac-agent" / file_name), str(target_file))
     # agent.properties
     file_name = "agent.properties"
     target_file = cacagent_dir / profile["name"] / file_name
     print("Installing ["+str(target_file)+"]")
-    with open(script_dir / "cac-agent" / file_name, 'r') as in_file, open(target_file, 'w') as out_file:
+    with open(str(script_dir / "cac-agent" / file_name), 'r') as in_file, open(str(target_file), 'w') as out_file:
         out_file.write(in_file.read().replace("9090", str(listen_port)))
     # pkcs11.cfg
     if not profile["pkcs_library"] == None:
         file_name = "pkcs11.cfg"
         target_file = cacagent_dir / profile["name"] / file_name
         print("Installing ["+str(target_file)+"]")
-        with open(target_file, 'w') as out_file:
+        with open(str(target_file), 'w') as out_file:
             out_file.write("library="+profile["pkcs_library"]+"\n")
             out_file.write("name=cac-agent\n")
 
 # Save a backup of the hosts file
 hosts_temp_backup_file = temp_dir_insecure / ("hosts_"+hosts_backup_suffix)
-with open(hosts_file, 'r') as in_file, open(hosts_temp_backup_file.parent / ("hosts_"+hosts_backup_suffix), 'w') as out_file:
+with open(str(hosts_file), 'r') as in_file, open(str(hosts_temp_backup_file.parent / ("hosts_"+hosts_backup_suffix)), 'w') as out_file:
     out_file.write(in_file.read())
 
 # Remove old section from hosts file`
-with open(hosts_file, 'r') as in_file, open(hosts_temp_file, 'w') as out_file:
+with open(str(hosts_file), 'r') as in_file, open(str(hosts_temp_file), 'w') as out_file:
     remove_section(in_file, out_file, '^#.*==== CAC-AGENT section start ====.*$',
                    '^#.*==== CAC-AGENT section end ====.*$')
 
 # Generate hosts file section
 hosts_file_section = ""
-with open(script_dir / "cac-agent" / "hosts", mode='r', newline='\n') as in_file, StringIO() as out_buffer:
+with open(str(script_dir / "cac-agent" / "hosts"), mode='r', newline='\n') as in_file, StringIO() as out_buffer:
     # NOTE: Ensure start/end headers are on their own line (for regex matching)
     # NOTE: We write everything using '\n' newlines, and the file writer converts to the appropriate
     # OS newlines (per the configuration specified when it was opened)
     out_buffer.write(
-        f"\n# ==== CAC-AGENT section start ====\n")
+        "\n# ==== CAC-AGENT section start ====\n")
     out_buffer.write("# This section will be replaced by the installer\n")
     for line in in_file.readlines():
         out_buffer.write(line)
     out_buffer.write(
-        f"\n# ==== CAC-AGENT section end ====\n")
+        "\n# ==== CAC-AGENT section end ====\n")
     hosts_file_section = out_buffer.getvalue()
 
 # Append new section to hosts file
-with open(hosts_temp_file, 'a') as out_file:
+with open(str(hosts_temp_file), 'a') as out_file:
     out_file.write(hosts_file_section)
 
 print("")
