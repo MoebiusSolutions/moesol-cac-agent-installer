@@ -39,7 +39,7 @@ admin privileges as necessary.
 Prerequisite - Python
 ----------------
 
-The installation script requires Python.
+The installation script requires Python 3.5+.
 
 Linux generally comes with Python installed, but ensure that you have `python3`:
 
