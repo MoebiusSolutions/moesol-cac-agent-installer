@@ -65,7 +65,7 @@ Install on Linux
 
 Execute the install script from the cloned/copied repo:
 
-	cd dcgsn-cac-agent/
+	cd moesol-cac-agent-installer/
 	python3 install-cac-agent.py
 
 Provide your credentials when prompted to run `sudo` actions.
@@ -76,8 +76,8 @@ Install on Windows
 
 Execute the install script from the cloned/copied repo:
 
-	cd dcgsn-cac-agent/
-	c:\path\to\python.exe dcgsn-cac-agent/install-cac-agent.py
+	cd moesol-cac-agent-installer
+	c:\path\to\python.exe install-cac-agent.py
 
 Provide appropriate credentials to admin actions when prompted.
 
